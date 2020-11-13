@@ -26,9 +26,9 @@ fi
 
 echo "HOME=$HOME" > .env
 
-echo  "[!] Applying WebKit patch"
-cd $HOME/source/webkit/Webkit
-git apply $WORKDIR/build_worker/webkit/webkit.patch
+#echo  "[!] Applying WebKit patch"
+#cd $HOME/source/webkit/Webkit
+#git apply $WORKDIR/build_worker/webkit/webkit.patch
 
 echo "[!] This deployer requires docker and docker-compose. Make sure you install these components before proceeding further."
 read -p "[+] Press any key to continue "
