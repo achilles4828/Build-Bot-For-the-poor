@@ -1,0 +1,16 @@
+https://firefox-source-docs.mozilla.org/setup/linux_build.html#building-firefox-on-linux
+https://developer.mozilla.org/en-US/docs/Mozilla/Developer_guide/mach
+./mach build faster
+./mach clobber
+./mach configure
+mk_add_options AUTOCLOBBER=1
+mozconfig
+ac_add_options --enable-artifact-builds
+mk_add_options MOZ_OBJDIR=./objdir-frontend
+docs.firefox-dev.tools/getting-started/build.html
+
+https://buildhub.moz.tools/?versions[0]=79.0&channel[0]=release
+Setting export SHELL=/bin/bash fixes it, but seems like that should be getting set somewhere else...
+https://github.com/mozilla/dxr/issues/51
+
+

@@ -1,0 +1,16 @@
+-> Setup Worker
+docker create -v /mnt/ccache:/ccache --name ccache debian
+docker run -e CCACHE_DIR=/ccache --volumes-from ccache -it debian
+
+
+https://ci.chromium.org/p/chromium/g/chromium.clang/console?limit=200 << Chrome ASN Failing totally
+
+How to build with shared libraries locally
+Assuming you have already have all sources checked out, run:
+
+export GYP_DEFINES="library=shared_library"
+gclient runhooks
+rm -rf out
+make
+RUN echo "%chrome-bot ALL = NOPASSWD: /sbin/shutdown" > /etc/sudoers.d/chrome-bot
+CMD ["/bin/bash", "/opt/swarming_bootstrap/start_swarm_bot.sh"]

@@ -1,0 +1,95 @@
+version: '3.7'
+services:
+  buildbot:
+    build:
+     context: .
+     dockerfile: ./build_master/Dockerfile
+    container_name: buildbot-master
+    restart: always
+    env_file:
+      - db.env
+    environment:
+      - BUILDBOT_WORKER_PORT=9989
+      - BUILDBOT_WEB_URL=http://localhost:8010/
+      - BUILDBOT_WEB_PORT=tcp:port=8010
+    links:
+      - db
+    depends_on:
+      - db
+    ports:
+      - "8010:8010"
+  db:
+    env_file:
+      - db.env
+    image: "postgres:9.4"
+    expose:
+      - 5432
+
+  webkit-night:
+    build:
+      context: .
+      dockerfile: ./build_worker/webkit/webkit-nightly-release-Dockerfile
+    container_name: webkit-night-worker
+    restart: always
+    environment:
+      TZ: Asia/Kolkata
+      DEBIAN_FRONTEND: noninteractive
+      BUILDMASTER: buildbot
+      BUILDMASTER_PORT: 9989
+      WORKERNAME: webkit-night
+      WORKERPASS: password123
+      WORKER_ENVIRONMENT_BLACKLIST: DOCKER_BUILDBOT* BUILDBOT_ENV_* BUILDBOT_1* WORKER_ENVIRONMENT_BLACKLIST
+      SHELL: /bin/bash
+      CCACHE_DIR: /ccache
+    volumes:
+      - /mnt/ccache:/ccache
+      - ${HOME}/source:/mnt/source
+      - ${HOME}/builds:/mnt/builds
+    links:
+      - buildbot
+
+  chromium-night:
+    build:
+     context: .
+     dockerfile: ./build_worker/chromium/chromium-nightly-release-Dockerfile
+    container_name: chromium-night-worker
+    restart: always
+    environment:
+      TZ: Asia/Kolkata
+      DEBIAN_FRONTEND: noninteractive
+      BUILDMASTER: buildbot
+      BUILDMASTER_PORT: 9989
+      WORKERNAME: chromium-night
+      WORKERPASS: password123
+      WORKER_ENVIRONMENT_BLACKLIST: DOCKER_BUILDBOT* BUILDBOT_ENV_* BUILDBOT_1* WORKER_ENVIRONMENT_BLACKLIST
+      SHELL: /bin/bash
+      CCACHE_DIR: /ccache
+    volumes:
+      - /mnt/ccache:/ccache
+      - ${HOME}/source:/mnt/source
+      - ${HOME}/builds:/mnt/builds
+    links:
+      - buildbot
+
+  firefox-night:
+    build:
+     context: .
+     dockerfile: ./build_worker/firefox/firefox-nightly-release-Dockerfile
+    container_name: firefox-night-worker
+    restart: always
+    environment:
+      TZ: Asia/Kolkata
+      DEBIAN_FRONTEND: noninteractive
+      BUILDMASTER: buildbot
+      BUILDMASTER_PORT: 9989
+      WORKERNAME: firefox-night
+      WORKERPASS: password123
+      WORKER_ENVIRONMENT_BLACKLIST: DOCKER_BUILDBOT* BUILDBOT_ENV_* BUILDBOT_1* WORKER_ENVIRONMENT_BLACKLIST
+      SHELL: /bin/bash
+      CCACHE_DIR: /ccache
+    volumes:
+      - /mnt/ccache:/ccache
+      - ${HOME}/source:/mnt/source
+      - ${HOME}/builds:/mnt/builds
+    links:
+      - buildbot 

@@ -1,0 +1,43 @@
+# buildbot/buildbot-worker
+
+FROM        ubuntu:20.04
+MAINTAINER  temp.io
+
+
+ENV         security_updates_as_of 2018-06-15
+
+# This will make apt-get install without question
+ARG         DEBIAN_FRONTEND=noninteractive
+
+# Install security updates and required packages
+RUN         apt-get update && \
+    apt-get -y upgrade && \
+    apt-get -y install -q \
+    build-essential \
+    git \
+    subversion \
+    python3-dev \
+    libffi-dev \
+    libssl-dev \
+    python3-setuptools \
+    python3-pip \
+    dumb-init \
+    curl && \
+    rm -rf /var/lib/apt/lists/* && \
+    # Install required python packages, and twisted
+    pip3 --no-cache-dir install 'twisted[tls]' && \
+    pip3 install virtualenv && \
+    mkdir /buildbot &&\
+    useradd -ms /bin/bash buildbot
+
+
+COPY . /usr/src/buildbot-worker
+COPY docker/buildbot.tac /buildbot/buildbot.tac
+
+RUN pip3 install /usr/src/buildbot-worker && \
+    chown -R buildbot /buildbot
+
+USER buildbot
+WORKDIR /buildbot
+
+CMD ["/usr/bin/dumb-init", "twistd", "--pidfile=", "-ny", "buildbot.tac"]
